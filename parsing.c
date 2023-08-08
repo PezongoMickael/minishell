@@ -6,7 +6,7 @@
 /*   By: mpezongo <mpezongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/06 17:53:37 by mpezongo          #+#    #+#             */
-/*   Updated: 2023/08/06 17:55:47 by mpezongo         ###   ########.fr       */
+/*   Updated: 2023/08/08 16:53:45 by mpezongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ char **get_parc(int *in_file, int *out_file, t_lexer **lexer, t_envp **envp)
     int i;
     
     i = 0;
-    tmp = malloc((count_words(*lexer) + 1) * sizeof(char *));
+    tmp = malloc((count_words(*lexer) + 2) * sizeof(char *));
     while (*lexer && (*lexer)->category != PIPE)
     {
         if ((*lexer)->category == WORD)
@@ -56,7 +56,7 @@ void parser_1(t_lexer *lexer, int *i, char **tmp)
     {
         index = 0;
         tmp1 = ft_split(lexer->str, ' ');
-        while (tmp1[index] != NULL)
+        while (tmp1 && tmp1[index] != NULL)
             tmp[(*i)++] = tmp1[index++];
         free(tmp1);
     }

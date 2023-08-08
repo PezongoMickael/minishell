@@ -3,108 +3,81 @@
 /*                                                        :::      ::::::::   */
 /*   ft_split.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rel-fila <rel-fila@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mpezongo <mpezongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/06 16:32:46 by rel-fila          #+#    #+#             */
-/*   Updated: 2023/08/06 16:32:47 by rel-fila         ###   ########.fr       */
+/*   Updated: 2023/08/08 14:20:52 by mpezongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static size_t	ft_check_separator(char const *str, char c)
+static int	ft_count_word(char const *s, char c)
 {
-	int		i;
-	int		j;
+	int i;
+	int word;
 
 	i = 0;
-	j = 0;
-	while (str[i] != '\0')
+	word = 0;
+	while (s && s[i])
 	{
-		if (str[i] == c)
+		if (s[i] != c)
 		{
-			while (str[i] == c)
+			word++;
+			while (s[i] != c && s[i])
 				i++;
-			j++;
 		}
-		i++;
+		else
+			i++;
 	}
-	return (j + 1);
+	return (word);
 }
 
-static void	ft_free(char **strs, int i, char *str)
+static int	ft_size_word(char const *s, char c, int i)
 {
-	int	y;
+	int	size;
 
-	y = 0;
-	free(str);
-	while (y < i)
-		free(strs[y++]);
+	size = 0;
+	while (s[i] != c && s[i])
+	{
+		size++;
+		i++;
+	}
+	return (size);
+}
+
+static void	ft_free(char **strs, int j)
+{
+	while (j-- > 0)
+		free(strs[j]);
 	free(strs);
 }
 
-char	*copy_worddup(char *str, char c, int *j)
+char		**ft_split(char const *s, char c)
 {
-	int		len;
-	char	*s;
-
-	len = 0;
-	while (str[len] != c && str[len])
-		len++;
-	s = malloc(sizeof(char) * (len + 1));
-	len = 0;
-	while (*str != c && *str)
-	{
-		s[len] = *str;
-		len++;
-		str++;
-		(*j)++;
-	}
-	s[len] = '\0';
-	return (s);
-}
-
-char	**ft_initialize_strs(char **strs, char *str, char c)
-{
-	size_t	i;
-	size_t	len;
+	int		i;
+	int		word;
+	char	**strs;
+	int		size;
 	int		j;
 
 	i = 0;
-	j = 0;
-	len = ft_check_separator(str, c);
-	while (*str && i < len)
+	j = -1;
+	word = ft_count_word(s, c);
+	if (!(strs = (char **)malloc((word + 1) * sizeof(char *))))
+		return (NULL);
+	while (++j < word)
 	{
-		strs[i] = copy_worddup(str + j, c, &j);
-		if (!strs[i])
+		while (s[i] == c)
+			i++;
+		size = ft_size_word(s, c, i);
+		if (!(strs[j] = ft_substr(s, i, size)))
 		{
-			ft_free(strs, i, str);
+			ft_free(strs, j);
 			return (NULL);
 		}
-		while (str[j] == c && str[j])
-			j++;
-		i++;
+		i += size;
 	}
-	strs[i] = 0;
-	return (strs);
-}
-
-char	**ft_split(char const *s, char c)
-{
-	char	**strs;
-	char	*str;
-
-	if (!s)
-		return (NULL);
-	str = ft_strtrim(s, &c);
-	if (!str)
-		return (NULL);
-	strs = (char **)malloc(sizeof(char **) * (ft_check_separator(str, c) + 1));
-	if (!strs)
-		return (NULL);
-	strs = ft_initialize_strs(strs, str, c);
-	if (!strs)
-		return (NULL);
-	free(str);
+	strs[j] = 0;
 	return (strs);
 }

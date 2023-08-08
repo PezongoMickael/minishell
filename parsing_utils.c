@@ -6,7 +6,7 @@
 /*   By: mpezongo <mpezongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/06 17:53:33 by mpezongo          #+#    #+#             */
-/*   Updated: 2023/08/06 17:53:34 by mpezongo         ###   ########.fr       */
+/*   Updated: 2023/08/08 14:58:19 by mpezongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void ft_count_words(char *str, int *word_count)
 t_parsing	*ft_lst_new_parser(int in_file, int out_file, char **str)
 {
 	t_parsing	*head;
+    int i;
 
 	head = (t_parsing *)malloc(sizeof(t_parsing));
 	if (!head)

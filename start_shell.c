@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   start_shell.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rel-fila <rel-fila@student.42.fr>          +#+  +:+       +#+        */
+/*   By: mpezongo <mpezongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/06 17:54:13 by mpezongo          #+#    #+#             */
-/*   Updated: 2023/08/07 18:41:47 by rel-fila         ###   ########.fr       */
+/*   Updated: 2023/08/08 16:57:08 by mpezongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,17 +32,22 @@ void	ft_lst_clear_parsing(t_parsing **lst)
 	*lst = NULL;
 }
 
-void update_envp_var(t_envp **envp)
+void update_envp_var(t_envp **envp, int type)
 {
     t_envp *node;
+    char *error;
 
+    if (type == 1)
+        error = ft_strdup("258");
+    else if (type == 2)
+        error = ft_strdup("1");
     node = *envp;
     while (node)
     {
         if (!ft_strncmp(node->name, "?", 1))
         {
             free(node->content);
-            node->content = ft_strdup("258");
+            node->content = error;
         }
         node = node->next;
     }
@@ -61,24 +66,20 @@ void start_treatment(char *line, t_parsing **parsings, t_envp **envp)
             if (!check_lexer_list(lexer))
             {
                 gather_words(lexer);
-                // while (lexer)
-                // {
-                //     printf("%s | %d\n", lexer->str, lexer->category);
-                //     lexer = lexer->next;
-                // }
                 parsing(&lexer, parsings, envp);
                 execute(*envp, *parsings);
+                // int i = 0;
                 // while (*parsings)
                 // {
                 //     i = 0;
                 //     printf("out : %d | in : %d\n", (*parsings)->out_file, (*parsings)->in_file);
-                //     while ((*parsings)->words[i])
+                //     while ((*parsings)->words && (*parsings)->words[i])
                 //         printf("str : %s\n", (*parsings)->words[i++]);
                 //     (*parsings)= (*parsings)->next;
                 // }
             }
             else
-                update_envp_var(envp);
+                update_envp_var(envp, 1);
             free_lexer(&lexer);
             if (*parsings != NULL)
 			{
@@ -87,7 +88,10 @@ void start_treatment(char *line, t_parsing **parsings, t_envp **envp)
 			}
         }
         else
+        {
+            update_envp_var(envp, 2);
             printf("Quotes error\n");
+        }
     }
     else if (check_spaces(line))
         add_history(line);

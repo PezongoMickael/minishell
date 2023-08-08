@@ -42,7 +42,10 @@ char *expand_var(char *str, int *i, t_envp **envp)
             if (node->content)
             {
                 tmp1 = ft_strdup(node->content);
-                if (str[*i] == '/')
+                if (str[*i] || ((str[*i] < '0' && str[*i] > '9')
+                    && (str[*i] < 'A' || str[*i] > 'Z')
+                    && (str[*i] < 'a' && str[*i] > 'z')
+                    && str[*i] != '_'))
                 {
                     free(tmp);
                     while ((str[*i] && str[*i] != ' ') && (!is_operator(str[*i])))
@@ -50,12 +53,14 @@ char *expand_var(char *str, int *i, t_envp **envp)
                         if (str[*i] == '$')
                             tmp = expand_var(str, i, envp);
                         else
+                        {
                             tmp = get_char(str[*i]);
+                            (*i)++;
+                        }
                         tmp2 = tmp1;
                         free(tmp1);
                         tmp1 = ft_strjoin(tmp2, tmp);
                         free(tmp);
-                        (*i)++;
                     }
                     return (tmp1);
                 }
@@ -69,7 +74,10 @@ char *expand_var(char *str, int *i, t_envp **envp)
                     return (free(tmp), tmp1);
                 }
                 else
-                    return (free(tmp), free(tmp1), ft_strdup(node->content));
+                {
+                    free(tmp);
+                    return (tmp1);
+                }
             }
         }
         node = node->next;

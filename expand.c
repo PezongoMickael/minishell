@@ -6,7 +6,7 @@
 /*   By: mpezongo <mpezongo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/06 17:52:55 by mpezongo          #+#    #+#             */
-/*   Updated: 2023/08/06 17:52:56 by mpezongo         ###   ########.fr       */
+/*   Updated: 2023/08/08 16:57:54 by mpezongo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,9 @@ t_lexer *expand(char *line, t_envp **envp)
     int i;
     char *str;
     t_lexer *lexer;
+    char *tmp;
+    char **strs;
+    int j;
 
     i = 0;
     str = divide_words(line);
@@ -78,7 +81,24 @@ t_lexer *expand(char *line, t_envp **envp)
     {
         if (str[i] == '$')
         {
-            ft_lexeradd_back(&lexer, ft_lexernew(expand_var(str, &i, envp), WORD));
+            tmp = expand_var(str, &i, envp);
+            strs = ft_split(tmp, ' ');
+            j = 0;
+            if (strs[0])
+            {
+                while (strs && strs[j])
+                {
+                    ft_lexeradd_back(&lexer, ft_lexernew(strs[j], WORD));
+                    j++;
+                }
+                free(strs);
+                free(tmp);
+            }
+            else
+            {
+                ft_lexeradd_back(&lexer, ft_lexernew(tmp, WORD));
+                free(strs);   
+            }
             i--;
         }
         else if (str[i] == '\'')
